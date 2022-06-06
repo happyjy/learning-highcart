@@ -1,4 +1,4 @@
-// calipers
+// callipers
 
 document.addEventListener("DOMContentLoaded", () => {
   let plotLines = [];

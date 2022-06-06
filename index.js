@@ -1,80 +1,9 @@
-// calipers
-
-const stripOf10secXaxis = 2500;
 document.addEventListener("DOMContentLoaded", () => {
+  let plotLines = [];
+  let chartObj = null;
+  let isDraggable = false;
+
   Highcharts.chart("container", {
-    title: {
-      text: "10sec, 2500개 ecg data, 부동 소수점 17자리",
-    },
-    chart: {
-      events: {
-        load: function (chart) {
-          chartObj = { ...chart.target };
-        },
-      },
-    },
-    xAxis: {
-      minPadding: 0,
-      max: stripOf10secXaxis,
-      // max: stripOf10secXaxis / 2,
-      // tickInterval: 250,
-      tickInterval: stripOf10secXaxis,
-      tickColor: "black",
-      minorTickInterval: 50,
-      minorTickColor: "gray",
-      lineColor: "black",
-      gridLineColor: "black",
-      labels: {
-        enabled: true,
-        padding: 0,
-        x: 9,
-        y: 14,
-        style: {
-          fontSize: "9px",
-          "line-height": "130%",
-          fill: "gray",
-          color: "gray",
-        },
-        // 마지막 10초의 라벨은 생략
-        // formatter: function () {
-        //   return this.value !== stripOf10secXaxis ? `${this.value / 250 + timeUnit}s` : "";
-        // },
-      },
-    },
-    yAxis: {
-      // -1 ~ 2 mV 구간을 각 0.5 mV 씩 표현 6개 구간으로 제공
-      min: -1,
-      max: 2,
-      tickmarkPlacement: "on",
-      // tickInterval: 0.5,
-      tickAmount: 7,
-      tickColor: "gray",
-      gridLineColor: "gray",
-      gridLineWidth: 1,
-      title: {
-        enabled: false,
-      },
-      labels: {
-        enabled: false,
-      },
-    },
-    series: [
-      {
-        // data: halfOfsimpleGridChartRawECG,
-        // data: simpleGridChartRawECGToprecision4,
-        data: simpleGridChartRawECG,
-        lineWidth: 2,
-        color: "red",
-        pointPlacement: "on",
-        animation: false,
-      },
-    ],
-  });
-
-  Highcharts.chart("container1", {
-    title: {
-      text: "10sec, 2500개 ecg data, 부동 소수점 4자리",
-    },
     chart: {
       events: {
         load: function (chart) {
@@ -105,13 +34,16 @@ document.addEventListener("DOMContentLoaded", () => {
             const x1 = chartObj.xAxis[0].toPixels(plotLines[0].options.value);
             const x2 = chartObj.xAxis[0].toPixels(plotLines[1].options.value);
             const y = chartObj.yAxis[0];
-            const lineWidth = 2;
+
+            const lineWidth = 5;
+            const zIndex = 999;
             chartObj.renderer
               .rect(x1, y.top, lineWidth, y.height)
               .attr({
                 id: "plotLine-1",
                 fill: "#FF0000",
-                zIndex: 4,
+                cursor: "ew-resize",
+                zIndex,
               })
               .add();
             chartObj.renderer
@@ -119,7 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
               .attr({
                 id: "plotLine-2",
                 fill: "#FF0000",
-                zIndex: 4,
+                cursor: "ew-resize",
+                zIndex,
               })
               .add();
 
@@ -131,12 +64,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 stroke: "#FF0000",
                 "stroke-width": 0,
                 fill: "yellow",
-                "fill-opacity": 0.01,
+                "fill-opacity": 0.35,
                 "stroke-dashoffset": -300,
-                zIndex: 4,
+                // zIndex: 4,
               })
               .add();
             console.log({ rect });
+
             chartObj.xAxis[0].removePlotLine("xPlotLine");
 
             const callipers = document.getElementById("calliper");
@@ -157,220 +91,100 @@ document.addEventListener("DOMContentLoaded", () => {
             callipers.onmousemove = (event) => {
               if (isDraggable) {
                 let scrollX = event.layerX - rectInsideX;
-                callipers.setAttribute("x", scrollX);
-                plotLine1.setAttribute("x", scrollX);
-                plotLine2.setAttribute("x", scrollX + (x2 - x1));
+                // callipers.setAttribute("x", scrollX);
+                // plotLine1.setAttribute("x", scrollX);
+                // plotLine2.setAttribute("x", scrollX + (x2 - x1));
               }
             };
-          }
-        },
-      },
-    },
-    xAxis: {
-      minPadding: 0,
-      max: stripOf10secXaxis,
-      // tickInterval: 250,
-      tickInterval: stripOf10secXaxis,
-      tickColor: "black",
-      minorTickInterval: 50 / 2,
-      minorTickColor: "gray",
-      lineColor: "black",
-      gridLineColor: "black",
-      labels: {
-        enabled: true,
-        padding: 0,
-        x: 9,
-        y: 14,
-        style: {
-          fontSize: "9px",
-          "line-height": "130%",
-          fill: "gray",
-          color: "gray",
-        },
-        // 마지막 10초의 라벨은 생략
-        // formatter: function () {
-        //   return this.value !== stripOf10secXaxis ? `${this.value / 250 + timeUnit}s` : "";
-        // },
-      },
-    },
-    yAxis: {
-      // -1 ~ 2 mV 구간을 각 0.5 mV 씩 표현 6개 구간으로 제공
-      min: -1,
-      max: 2,
-      tickmarkPlacement: "on",
-      // tickInterval: 0.5,
-      tickAmount: 7,
-      tickColor: "gray",
-      gridLineColor: "gray",
-      gridLineWidth: 1,
-      title: {
-        enabled: false,
-      },
-      labels: {
-        enabled: false,
-      },
-    },
-    series: [
-      {
-        data: simpleGridChartRawECGToprecision4,
-        lineWidth: 2,
-        color: "red",
-        pointPlacement: "on",
-        animation: false,
-      },
-    ],
-  });
 
-  Highcharts.chart("container2", {
-    title: {
-      text: "10sec, 1250개 ecg data, 부동 소수점 17자리",
-    },
-    chart: {
-      events: {
-        load: function (chart) {
-          chartObj = { ...chart.target };
-        },
-        click: function (e) {
-          if (plotLines.length < 2) {
-            const plotLine = chartObj.xAxis[0].addPlotLine({
-              id: "xPlotLine",
-              value: e.xAxis[0].value,
-              width: 2,
-              color: "blue",
-            });
+            let clickX;
+            plotLine1.onmousedown = (event) => {
+              console.log("onmousedown");
 
-            console.log({ plotLine });
-            plotLines.push(plotLine);
-          }
-
-          if (plotLines.length === 2) {
-            const from = plotLines[0].options.value;
-            const to = plotLines[1].options.value;
-            /*  chartObj.xAxis[0].addPlotBand({
-                  from,
-                  to,
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  id: 'plot-band-1'
-              }) */
-            const x1 = chartObj.xAxis[0].toPixels(plotLines[0].options.value);
-            const x2 = chartObj.xAxis[0].toPixels(plotLines[1].options.value);
-            const y = chartObj.yAxis[0];
-            const lineWidth = 2;
-            chartObj.renderer
-              .rect(x1, y.top, lineWidth, y.height)
-              .attr({
-                id: "plotLine-1",
-                fill: "#FF0000",
-                zIndex: 4,
-              })
-              .add();
-            chartObj.renderer
-              .rect(x2, y.top, lineWidth, y.height)
-              .attr({
-                id: "plotLine-2",
-                fill: "#FF0000",
-                zIndex: 4,
-              })
-              .add();
-
-            // for move
-            const rect = chartObj.renderer
-              .rect(x1, y.top, x2 - x1, y.height)
-              .attr({
-                id: "calliper",
-                stroke: "#FF0000",
-                "stroke-width": 0,
-                fill: "yellow",
-                "fill-opacity": 0.01,
-                "stroke-dashoffset": -300,
-                zIndex: 4,
-              })
-              .add();
-            console.log({ rect });
-            chartObj.xAxis[0].removePlotLine("xPlotLine");
-
-            const callipers = document.getElementById("calliper");
-            const plotLine1 = document.getElementById("plotLine-1");
-            const plotLine2 = document.getElementById("plotLine-2");
-            let rectInsideX = 0;
-            callipers.onmousedown = (event) => {
-              isDraggable = true;
               rectInsideX =
-                event.layerX - parseInt(callipers.getAttribute("x"));
+                event.layerX - parseInt(plotLine1.getAttribute("x"));
+              // clickX = e.pageX - plotLine1.translateX;
+              clickX = event.pageX - parseInt(plotLine1.getAttribute("x"));
+
+              // document.addEventListener("onmousemove", (event) => {
+              document.querySelector("#container").onmousemove = (event) => {
+                // console.log("working");
+                let scrollX = event.layerX - rectInsideX;
+                plotLine1.setAttribute("x", scrollX);
+                // line.translate(e.pageX - clickX);
+              };
+              // .addEventListener("onmousemove", (event) => {
+              //   console.log("onmousemove");
+              //   let scrollX = event.layerX - rectInsideX;
+              //   plotLine1.setAttribute("x", scrollX);
+              //   line.translate(e.pageX - clickX);
+              // });
+
+              // plotLine1.onmousemove = (event) => {
+              //   console.log("onmousemove");
+              //   let scrollX = event.layerX - rectInsideX;
+              //   plotLine1.setAttribute("x", scrollX);
+              // };
+              plotLine1.onmouseup = (e) => {
+                // console.log("onmouseup", plotLine1);
+                document.querySelector("#container").onmousemove = "";
+                // plotLine1.removeEventListener("onmouseup");
+              };
             };
-            callipers.onmouseup = (event) => {
+
+            plotLine2.onmousedown = (event) => {
+              isDraggable = true;
+            };
+            plotLine2.onmouseup = (event) => {
               isDraggable = false;
             };
-            callipers.onmouseout = (event) => {
+            plotLine2.onmouseout = (event) => {
               isDraggable = false;
             };
-            callipers.onmousemove = (event) => {
+            plotLine2.onmousemove = (event) => {
+              console.log({ isDraggable, event });
               if (isDraggable) {
                 let scrollX = event.layerX - rectInsideX;
-                callipers.setAttribute("x", scrollX);
-                plotLine1.setAttribute("x", scrollX);
-                plotLine2.setAttribute("x", scrollX + (x2 - x1));
+                plotLine2.setAttribute("x", scrollX);
+                // plotLine2.setAttribute("x", scrollX + (x2 - x1));
               }
             };
           }
         },
       },
     },
-    xAxis: {
-      minPadding: 0,
-      // max: stripOf10secXaxis,
-      max: stripOf10secXaxis / 2,
-      // tickInterval: 250,
-      tickInterval: stripOf10secXaxis / 2,
-      tickColor: "black",
-      minorTickInterval: 50 / 2,
-      minorTickColor: "gray",
-      lineColor: "black",
-      gridLineColor: "black",
-      labels: {
-        enabled: true,
-        padding: 0,
-        x: 9,
-        y: 14,
-        style: {
-          fontSize: "9px",
-          "line-height": "130%",
-          fill: "gray",
-          color: "gray",
-        },
-        // 마지막 10초의 라벨은 생략
-        // formatter: function () {
-        //   return this.value !== stripOf10secXaxis ? `${this.value / 250 + timeUnit}s` : "";
-        // },
-      },
-    },
-    yAxis: {
-      // -1 ~ 2 mV 구간을 각 0.5 mV 씩 표현 6개 구간으로 제공
-      min: -1,
-      max: 2,
-      tickmarkPlacement: "on",
-      // tickInterval: 0.5,
-      tickAmount: 7,
-      tickColor: "gray",
-      gridLineColor: "gray",
-      gridLineWidth: 1,
-      title: {
-        enabled: false,
-      },
-      labels: {
-        enabled: false,
-      },
-    },
     series: [
       {
-        data: halfOfsimpleGridChartRawECG,
-        // data: simpleGridChartRawECGToprecision4,
-        // data: simpleGridChartRawECG,
-        lineWidth: 2,
-        color: "red",
-        pointPlacement: "on",
         animation: false,
+        data: [
+          29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1,
+          95.6, 54.4,
+        ],
       },
     ],
+    tooltip: {
+      enabled: false,
+    },
+    plotOptions: {
+      series: {
+        // enableMouseTracking: false   // 모든 마우스 이벤트 제거, performance 향샹 기대 가능하다고 함
+        marker: {
+          enabled: false,
+          states: {
+            hover: {
+              enabled: false, // hover 시 마우스 포인터와 가까운 포인트 강조 효과 제거
+            },
+          },
+        },
+        states: {
+          hover: {
+            enabled: true,
+            halo: null, // hover 시 마우스 포인터와 가까운 포인트 주변 후광(?) 효과 제거
+            lineWidthPlus: 0,
+          },
+        },
+        animation: false, // animation 제거(렌더 시간 단축!!!)
+      },
+    },
   });
 });
