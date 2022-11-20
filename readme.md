@@ -1,6 +1,6 @@
 # learning-highcart
 
-index copy - 기초
+index copy - 기초  
 index copy 2 - credits  
 index copy 3 - zoomType  
 index copy 4 - tooltips  
